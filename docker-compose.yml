@@ -21,3 +21,7 @@ services:
     image: mongo:3.6
     ports:
       - "127.0.0.1:27017:27017"
+  rabbitmq:
+    image: rabbitmq:3.6-alpine
+    ports:
+      - "127.0.0.1:5672:5672"

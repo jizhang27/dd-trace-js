@@ -95,6 +95,43 @@ tracer.use('pg', {
 
 Each integration can be configured individually. See below for more information for every integration.
 
+<h3 id="amqplib">amqplib</h3>
+
+<h5 id="amqplib-tags">Tags</h5>
+
+| Tag                     | Description                                        |
+|-------------------------|----------------------------------------------------|
+| out.host         | The host of the AMQP server.                              |
+| out.port         | The port of the AMQP server.                              |
+| span.kind        | Set to either `producer` or `consumer` where it applies.  |
+| amqp.queue       | The queue targeted by the command (when available).       |
+| amqp.exchange    | The exchange targeted by the command (when available).    |
+| amqp.routingKey  | The routing key targeted by the command (when available). |
+| amqp.consumerTag | The consumer tag (when available).                        |
+| amqp.source      | The source exchange of the binding (when available).      |
+| amqp.destination | The destination exchange of the binding (when available). |
+
+<h5 id="amqplib-config">Configuration Options</h5>
+
+| Option           | Default                   | Description                            |
+|------------------|---------------------------|----------------------------------------|
+| service          | *Service name of the app* | The service name for this integration. |
+
+<h5 id="amqplib-limitations">Known Limitations</h5>
+
+When consuming messages, the current span must manually be finished.
+
+For example:
+
+```js
+channel.consume('queue', msg => {
+  // handle the message and then finish the span
+  tracer.currentSpan().finish()
+}, {}, () => {)
+```
+
+This limitation doesn't apply to other commands.
+
 <h3 id="express">express</h3>
 
 <h5 id="express-tags">Tags</h5>
