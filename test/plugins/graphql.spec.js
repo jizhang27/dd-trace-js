@@ -25,7 +25,7 @@ describe('Plugin', () => {
         return agent.load(plugin, 'graphql')
       })
 
-      it('should do automatic instrumentation on app routes', done => {
+      it('should do automatic instrumentation on schema resolvers', done => {
         // const schema = graphql.buildSchema(`
         //   type Query {
         //     hello: String
@@ -51,7 +51,7 @@ describe('Plugin', () => {
           })
         })
 
-        console.log(schema)
+        // console.log(schema._queryType._fields)
 
         // const result = resolveField(
         //   exeContext,
@@ -60,6 +60,7 @@ describe('Plugin', () => {
         //   fieldNodes,
         //   fieldPath,
         // );
+
         const query = `{ hello }`
         // const query = `{ human(id: 1002) { name } }`
 
@@ -73,8 +74,16 @@ describe('Plugin', () => {
           }
         }
 
-        graphql.graphql(schema, query, rootValue)
-          .then(res => console.log(res) || done())
+        agent
+          .use(traces => {
+            expect(traces[0][0]).to.have.property('service', 'test-graphql')
+            // expect(traces[0][0]).to.have.property('type', 'web')
+            expect(traces[0][0]).to.have.property('resource', 'hello')
+          })
+          .then(done)
+          .catch(done)
+
+        graphql.graphql(schema, query, rootValue).catch(done)
       })
     })
   })
